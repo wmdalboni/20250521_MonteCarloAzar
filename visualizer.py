@@ -2,6 +2,7 @@ import matplotlib.pyplot as plt
 import matplotlib.ticker as mtick
 from collections import Counter
 from matplotlib.collections import PolyCollection
+from matplotlib.patches import Rectangle
 import numpy as np
 import seaborn as sns
 import pandas as pd
@@ -33,7 +34,7 @@ def plot_simulation(df):
         return resultado
 
     plt.style.use("default")
-    fig, ax = plt.subplots(figsize=(12, 6), facecolor="#f2f2f2")
+    fig, ax = plt.subplots(figsize=(14, 7), facecolor="#f2f2f2", constrained_layout=True)
 
     ax.axhspan(0, df.max().max(), facecolor="#e6f4ea")
     ax.axhspan(df.min().min(), 0, facecolor="#fce8e6")
@@ -138,7 +139,7 @@ def plot_summary_histogram(df, bins=8):
     df_plot = pd.DataFrame({"Saldo Final": finais, "Faixa": bin_series})
 
     plt.style.use("default")
-    fig, ax = plt.subplots(figsize=(10, 6), facecolor="#f9f9f9")
+    fig, ax = plt.subplots(figsize=(12, 6), facecolor="#f9f9f9", constrained_layout=True)
 
     palette = sns.color_palette("husl", len(df_plot["Faixa"].unique()))
     for i, faixa in enumerate(df_plot["Faixa"].unique()):
@@ -153,17 +154,15 @@ def plot_summary_histogram(df, bins=8):
     ax.set_ylabel("Frequência", fontsize=12)
     ax.legend(title="Faixa", bbox_to_anchor=(1.05, 1), loc='upper left')
     ax.grid(True, linestyle="--", alpha=0.3)
-    plt.tight_layout()
 
     return fig
-
 
 def plot_histogram_kde(df):
     finais = df.iloc[:, -1]
     perc_perdedores = (finais < 0).mean() * 100
 
     plt.style.use("default")
-    fig, ax = plt.subplots(figsize=(10, 6), facecolor="#f9f9f9")
+    fig, ax = plt.subplots(figsize=(12, 6), facecolor="#f9f9f9", constrained_layout=True)
 
     sns.histplot(finais, bins=30, kde=True, color="gray", edgecolor="black", ax=ax, stat='density')
 
@@ -179,76 +178,55 @@ def plot_histogram_kde(df):
             fontsize=12, bbox=dict(facecolor='white', edgecolor='gray', boxstyle='round'))
 
     ax.grid(True, linestyle="--", alpha=0.3)
-    plt.tight_layout()
 
     return fig
 
-def plot_violin_segmentado_unico(df):
+
+def plot_box_segmentado_unico(df):
     finais = df.iloc[:, -1].values
+    fig, ax = plt.subplots(figsize=(12, 5), facecolor="#f9f9f9")
 
-    fig, ax = plt.subplots(figsize=(12, 3), facecolor="#f9f9f9")
+    min_val = finais.min()
+    max_val = finais.max()
 
-    # Seaborn violinplot para obter a forma, mas não desenhar nada
-    sns.violinplot(x=finais, orient='h', ax=ax, color='gray', alpha=0.0, linewidth=0)
+    # Fundo colorido conforme presença
+    if min_val < 0:
+        ax.axvspan(min_val, 0, facecolor="#e6f4ea")  # Verde para negativos
+    if max_val > 0:
+        ax.axvspan(0, max_val, facecolor="#fce8e6")  # Vermelho para positivos
 
-    # Recupera o Path do violin gerado
-    for coll in ax.collections:
-        if isinstance(coll, PolyCollection):
-            verts = coll.get_paths()[0].vertices
-            break
-    else:
-        raise RuntimeError("Não foi possível obter os vértices do violin.")
+    # Linha de referência zero
+    ax.axvline(0, color="#333333", linewidth=1.2, linestyle="--", label="Ponto de Equilíbrio")
 
-    x = verts[:, 0]
-    y = verts[:, 1]
+    # Boxplot branco, sem jitter
+    sns.boxplot(x=finais, orient='h', ax=ax, 
+                boxprops=dict(facecolor='white', edgecolor='black'), 
+                whiskerprops=dict(color='black'), 
+                capprops=dict(color='black'), 
+                medianprops=dict(color='black'), 
+                flierprops=dict(marker='o', markersize=5, linestyle='none', markerfacecolor='gray', alpha=0.3),
+                width=0.3)
 
-    # Separar onde x < 0 e x >= 0
-    idx_neg = x < 0
-    idx_pos = x >= 0
-
-    def criar_poly(x, y):
-        coords = np.column_stack([x, y])
-        coords = np.vstack([coords, [x[-1], 0], [x[0], 0], coords[0]])
-        return coords
-
-    # Parte negativa
-    if np.any(idx_neg):
-        x_neg = x[idx_neg]
-        y_neg = y[idx_neg]
-        poly_neg = criar_poly(x_neg, y_neg)
-        pc_neg = PolyCollection([poly_neg], facecolor="#c62828", alpha=0.3)
-        ax.add_collection(pc_neg)
-
-    # Parte positiva
-    if np.any(idx_pos):
-        x_pos = x[idx_pos]
-        y_pos = y[idx_pos]
-        poly_pos = criar_poly(x_pos, y_pos)
-        pc_pos = PolyCollection([poly_pos], facecolor="#2e7d32", alpha=0.3)
-        ax.add_collection(pc_pos)
-
-    ax.set_ylim(-0.5, 0.5)
+    # Estilização
     ax.set_yticks([])
     ax.set_xlabel("Saldo Final (R$)", fontsize=12)
-    ax.set_title("Violin Plot Segmentado (Horizontal)", fontsize=14, weight='bold')
+    ax.set_title("Boxplot Segmentado (Horizontal)", fontsize=14, weight='bold')
     ax.grid(True, axis='x', linestyle='--', alpha=0.3)
+    ax.set_facecolor("#ffffff")
 
-    for spine in ax.spines.values():
-        spine.set_visible(False)
-
+    # Estatísticas
     total = len(finais)
-    vencedores = finais[finais >= 0]
+    vencedores = finais[finais > 0]
     perdedores = finais[finais < 0]
-
-    y_text = 0.3  # deslocamento vertical
+    y_text = 0.3
 
     if len(vencedores) > 0:
         pct_vencedores = len(vencedores) / total * 100
         texto_vencedores = (
             f"Vencedores: {len(vencedores)} ({pct_vencedores:.1f}%)\n"
-            f"Máximo: R\$ {vencedores.max():,.2f}\n"
-            f"Médio: R\$ {vencedores.mean():,.2f}\n"
-            f"Mínimo: R\$ {vencedores.min():,.2f}"
+            f"Máx: R$ {vencedores.max():,.2f}\n"
+            f"Médio: R$ {vencedores.mean():,.2f}\n"
+            f"Mín: R$ {vencedores.min():,.2f}"
         )
     else:
         texto_vencedores = "Não há vencedores.\nVeja perdedores."
@@ -257,22 +235,23 @@ def plot_violin_segmentado_unico(df):
         pct_perdedores = len(perdedores) / total * 100
         texto_perdedores = (
             f"Perdedores: {len(perdedores)} ({pct_perdedores:.1f}%)\n"
-            f"Máximo: R\$ {perdedores.max():,.2f}\n"
-            f"Médio: R\$ {perdedores.mean():,.2f}\n"
-            f"Mínimo: R\$ {perdedores.min():,.2f}"
+            f"Máx: R$ {perdedores.max():,.2f}\n"
+            f"Médio: R$ {perdedores.mean():,.2f}\n"
+            f"Mín: R$ {perdedores.min():,.2f}"
         )
     else:
         texto_perdedores = "Não há perdedores.\nVeja vencedores."
 
-    # Coloca texto dos vencedores à direita do zero
     xlim = ax.get_xlim()
-    x_meio = (xlim[0] + xlim[1]) / 2
-    ax.text(max(0, xlim[0]*0.1 + xlim[1]*0.9), y_text, texto_vencedores,
-            ha='left', va='top', fontsize=10, color='#2e7d32')
 
-    # Coloca texto dos perdedores à esquerda do zero
+    ax.text(max(0, xlim[0]*0.1 + xlim[1]*0.9), y_text, texto_vencedores,
+            ha='left', va='top', fontsize=10, color='#c62828')  # vermelho
+
     ax.text(min(0, xlim[0]*0.9 + xlim[1]*0.1), -y_text, texto_perdedores,
-            ha='right', va='bottom', fontsize=10, color='#c62828')
+            ha='right', va='bottom', fontsize=10, color='#2e7d32')  # verde
+
+    for spine in ax.spines.values():
+        spine.set_visible(False)
 
     plt.tight_layout()
     return fig

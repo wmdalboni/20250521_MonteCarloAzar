@@ -9,7 +9,9 @@ def run_simulation(aposta, retorno, turnos, chance_perda, apostadores):
         saldo = 0
         for t in range(turnos):
             venceu = np.random.rand() < chance_vitoria
-            saldo += aposta * retorno if venceu else -aposta
+            lucro = (aposta * retorno) - aposta
+            saldo += lucro if venceu else -aposta
             historico[i, t] = saldo
 
     return pd.DataFrame(historico)
+
