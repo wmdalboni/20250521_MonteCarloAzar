@@ -16,7 +16,7 @@ with col1:
 
 with col2:
     turnos = st.number_input("Quantidade de Apostas", 1, 1000, 50, step=1, help="⚠️ O valor não pode ser negativo.")
-    apostadores = st.number_input("Número de Apostadores", min_value=1, value=10000, step=1, max_value=100000, help="Ele simulará não só sua jogada mas vários outros como você. Mais pessoas jogando significa mais precisão. Se não souber, deixe como está.")
+    apostadores = st.number_input("Número de Apostadores", min_value=1, value=1000, step=1, max_value=1000, help="Ele simulará não só sua jogada mas vários outros como você. Mais pessoas jogando significa mais precisão. Se não souber, deixe como está.")
 
     col3, col4, col5, col6 = st.columns(4)
 
