@@ -1,7 +1,7 @@
 import streamlit as st
 from simulator import run_simulation
-from visualizer import plot_simulation
-from summary import summarize_turns, summarize_total
+from visualizer import plot_simulation,  plot_violin_segmentado_unico
+# from summary import summarize_turns
 
 st.set_page_config(page_title="Simulação Monte Carlo de Apostas", layout="wide")
 
@@ -12,13 +12,12 @@ retorno = st.number_input("Taxa de Retorno (multiplicador)", min_value=0.0, valu
 turnos = st.number_input("Quantidade de Turnos (Eixo X)", 1, 1000, 50)
 chance_perda = st.number_input("Chance de Perder (%)", 0, 100, 50)
 apostadores = st.number_input("Número de Apostadores (iterações)", min_value=1, value=1000, step=1)
+# bins = st.slider("Quantidade de Faixas (bins)", min_value=2, max_value=20, value=8)
 
 if st.button("Iniciar Simulação"):
     resultados = run_simulation(aposta, retorno, turnos, chance_perda, apostadores)
+
     st.pyplot(plot_simulation(resultados))
 
-    st.subheader("📊 Sumário por Turno")
-    st.text(summarize_turns(resultados))
-
-    st.subheader("📈 Sumário Total")
-    st.text(summarize_total(resultados))
+    st.subheader("📊 Violin Plot dos Saldos Finais por Faixa")
+    st.pyplot(plot_violin_segmentado_unico(resultados))
