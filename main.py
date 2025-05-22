@@ -10,7 +10,8 @@ pix_key = st.secrets.get("PIX_KEY", None)
 st.set_page_config(page_title="Simulabets!", layout="wide")
 
 # Defino o título principal que vai aparecer no topo da aplicação.
-st.title("🎲 SimulaBet - Simule suas apostas! 🎲")
+st.title("🎲 SimulaBet 🎲")
+st.markdown("## Simule suas apostas!")
 
 # Crio duas colunas para organizar os inputs do usuário lado a lado, assim fica mais limpo e intuitivo.
 col1, col2 = st.columns(2)
