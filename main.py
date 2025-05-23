@@ -147,7 +147,7 @@ with col1:
 
     Você pode usar, modificar e distribuir este código, desde que mantenha o devido crédito ao autor original:  
     <b>Willian Dalboni, Analista de Dados e BI</b> (<a href="https://www.linkedin.com/in/willian-dalboni-50126637/" target="_blank">LinkedIn</a>).<br><br>
-    Se este projeto fez a diferença para você, considere apoiar com uma doação simbólica via Pix: <b>{pix_key if pix_key else "(Imagem ao lado)"}</b>. 
+    Se este projeto fez a diferença para você, considere apoiar com uma doação simbólica via Pix na Imagem ao lado. 
     <br>Muito obrigado pelo seu apoio e confiança!  
     </div>
     """
