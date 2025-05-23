@@ -98,7 +98,7 @@ if st.button("Iniciar Simulação"):
         mensagem = f"Com {turnos} apostas, você perderia R$ {abs(media_esperada):.2f}* ao final!"
         cor_msg = "red"
         icone = " 🚨 "
-        titulo = "VOCÊ IRIA PERDER DINHEIRO!"
+        titulo = "VOCÊ PERDERIA DINHEIRO!"
     else:
         mensagem = "Os dados inseridos estão subestimando* a ganância da Bet!"
         cor_msg = "orange"
