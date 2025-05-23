@@ -95,7 +95,7 @@ if st.button("Iniciar Simulação"):
 
     # Exibo uma mensagem de alerta personalizada baseada no valor esperado.
     if valor_esperado < 0:
-        mensagem = f"Com {turnos} apostas, você perderá R$ {abs(media_esperada):.2f}* ao final!"
+        mensagem = f"Com {turnos} apostas, você perderia R$ {abs(media_esperada):.2f}* ao final!"
         cor_msg = "red"
         icone = " 🚨 "
         titulo = "VOCÊ IRIA PERDER DINHEIRO!"
