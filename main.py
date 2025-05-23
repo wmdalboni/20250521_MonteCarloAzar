@@ -8,6 +8,7 @@ pix_key = st.secrets.get("PIX_KEY", None)
 
 # Aqui eu configuro a página do Streamlit, dando um título para a aba e definindo o layout como 'wide' para usar mais espaço horizontal.
 st.set_page_config(page_title="Simulabets!", layout="wide")
+st.info("Este site está em construção e funcionará melhor em telas grandes. Se você está vendo isso, é porque você é especial! Obrigado por testar!")
 
 # Defino o título principal que vai aparecer no topo da aplicação.
 st.title("🎲 SimulaBet 🎲")
